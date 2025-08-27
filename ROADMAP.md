@@ -1,63 +1,88 @@
-# Qwen CLI Roadmap
+# ROADMAP: Qwen-Code-Enhanced
 
-The [Official Gemini CLI Roadmap](https://github.com/orgs/google-gemini/projects/11/)
+Este documento descreve o plano de desenvolvimento para o fork **Qwen-Code-Enhanced**, uma versão aprimorada da ferramenta `qwen-code` com foco em autonomia (uso offline), personalização e eficiência para o desenvolvedor.
 
-Gemini CLI is an open-source AI agent that brings the power of Gemini directly into your terminal. It provides lightweight access to Gemini, giving you the most direct path from your prompt to our model.
+## Visão do Projeto
 
-This document outlines our approach to the Gemini CLI roadmap. Here, you'll find our guiding principles and a breakdown of the key areas we are
-focused on for development. Our roadmap is not a static list but a dynamic set of priorities that are tracked live in our GitHub Issues.
+O objetivo é transformar o `qwen-code` em um assistente de codificação mais poderoso e flexível, que não dependa exclusivamente de uma conexão com a internet e que se adapte melhor aos fluxos de trabalho individuais do desenvolvedor.
 
-As an [Apache 2.0 open source project](https://github.com/google-gemini/gemini-cli?tab=Apache-2.0-1-ov-file#readme), we appreciate and welcome [public contributions](https://github.com/google-gemini/gemini-cli/blob/main/CONTRIBUTING.md), and will give first priority to those contributions aligned with our roadmap. If you want to propose a new feature or change to our roadmap, please start by [opening an issue for discussion](https://github.com/google-gemini/gemini-cli/issues/new/choose).
+---
 
-## Disclaimer
+## Fase 1: Fundação e Suporte Offline
 
-This roadmap represents our current thinking and is for informational purposes only. It is not a commitment or a guarantee of future delivery. The development, release, and timing of any features are subject to change, and we may update the roadmap based on community discussions as well as when our priorities evolve.
+O foco inicial é quebrar a dependência da nuvem e estabelecer as bases para futuras melhorias.
 
-## Guiding Principles
+### 1.1. Criação do Fork e Limpeza Inicial
+- [ ] **Criar o Fork:** Fazer o fork do repositório `QwenLM/qwen-code` no GitHub.
+- [ ] **Clonar o Fork Localmente:** `git clone [URL-do-seu-fork]`
+- [ ] **Renomear o Projeto:** Atualizar o `package.json` e outros locais relevantes para refletir o novo nome (ex: `qwen-code-enhanced`).
+- [ ] **Revisar o Código:** Navegar pela estrutura do projeto para entender os principais componentes, especialmente os relacionados à autenticação e chamadas de API.
 
-Our development is guided by the following principles:
+### 1.2. Implementar Suporte a Modelos Locais (Ollama/LM Studio)
+Esta é a funcionalidade principal da Fase 1.
 
-- **Power & Simplicity:** Deliver access to state-of-the-art Gemini models with an intuitive and easy-to-use lightweight command-line interface.
-- **Extensibility:** An adaptable agent to help you with a variety of use cases and environments along with the ability to run these agents anywhere.
-- **Intelligent:** Gemini CLI should be reliably ranked among the best agentic tools as measured by benchmarks like SWE Bench, Terminal Bench, and CSAT.
-- **Free and Open Source:** Foster a thriving open source community where cost isn’t a barrier to personal use, and PRs get merged quickly. This means resolving and closing issues, pull requests, and discussion posts quickly.
+- [ ] **Modificar o Menu de Configuração:** Adicionar uma nova opção na interface de autenticação inicial: "3. Agente Local (Ollama/Outro)".
+- [ ] **Criar Lógica de Configuração Local:**
+    - Se a opção 3 for escolhida, solicitar ao usuário a URL base da API local (ex: `http://localhost:11434/v1` ).
+    - Oferecer um valor padrão (`default`) para facilitar a configuração com o Ollama.
+    - O nome do modelo a ser usado (ex: `codellama:7b`).
+    - Salvar essas configurações no arquivo de configuração do projeto.
+- [ ] **Adaptar o Cliente de API:** Modificar a função que faz as chamadas para a API para que ela use a URL base e o modelo configurados pelo usuário, em vez de se conectar à API da Qwen. A chave de API pode ser um valor fixo como "ollama", já que muitos servidores locais não a exigem.
+- [ ] **Documentar o Uso Local:** Atualizar o `README.md` com instruções claras sobre como:
+    - Instalar e executar o Ollama.
+    - Baixar um modelo de codificação (`ollama pull codellama`).
+    - Configurar a ferramenta para usar este modelo local.
 
-## How the Roadmap Works
+---
 
-Our roadmap is managed directly through Github Issues. See our entry point Roadmap Issue [here](https://github.com/google-gemini/gemini-cli/issues/4191). This approach allows for transparency and gives you a direct way to learn more or get involved with any specific initiative. All our roadmap items will be tagged as Type:`Feature` and Label:`maintainer` for features we are actively working on, or Type:`Task` and Label:`maintainer` for a more detailed list of tasks.
+## Fase 2: Melhorias de Usabilidade e Controle
 
-Issues are organized to provide key information at a glance:
+Com o suporte local funcionando, o foco muda para dar mais controle e poder ao usuário.
 
-- **Target Quarter:** `Milestone` denotes the anticipated delivery timeline.
-- **Feature Area:** Labels such as `area/model` or `area/tooling` categorizes the work.
-- **Issue Type:** _Workstream_ => _Epics_ => _Features_ => _Tasks|Bugs_
+### 2.1. Gerenciamento Explícito de Contexto
+- [ ] **Implementar Comandos de Contexto:**
+    - `/add <caminho_do_arquivo_ou_pasta>`: Adiciona o conteúdo de um ou mais arquivos ao contexto da conversa.
+    - `/remove <caminho_do_arquivo>`: Remove um arquivo do contexto.
+    - `/context`: Lista todos os arquivos atualmente no contexto.
+    - `/clear`: Limpa todo o contexto da sessão atual.
+- [ ] **Atualizar a Interface:** Exibir o número de arquivos e talvez o total de tokens do contexto atual no prompt da ferramenta.
 
-To see what we're working on, you can filter our issues by these dimensions. See all our items [here](https://github.com/orgs/google-gemini/projects/11/views/19)
+### 2.2. Sistema de Personas (Prompts Customizáveis)
+- [ ] **Criar Comandos de Persona:**
+    - `/persona save <nome> "[PROMPT]"`: Salva um prompt de sistema customizado.
+    - `/persona use <nome>`: Carrega o prompt para a sessão atual.
+    - `/persona list`: Lista todas as personas salvas.
+    - `/persona delete <nome>`: Apaga uma persona.
+- [ ] **Armazenamento de Personas:** Salvar as personas em um arquivo de configuração global (ex: `~/.qwen-code-enhanced/personas.json`) para que estejam disponíveis em todos os projetos.
 
-## Focus Areas
+---
 
-To better organize our efforts, we categorize our work into several key feature areas. These labels are used on our GitHub Issues to help you filter and
-find initiatives that interest you.
+## Fase 3: Integração e Automação de Fluxos de Trabalho
 
-- **Authentication:** Secure user access via API keys, Gemini Code Assist login etc.
-- **Model:** Support new Gemini models, multi-modality, local execution, and performance tuning.
-- **User Experience:** Improve the CLI's usability, performance, interactive features, and documentation.
-- **Tooling:** Built-in tools and the MCP ecosystem.
-- **Core:** Core functionality of the CLI
-- **Extensibility:** Bringing Gemini CLI to other surfaces e.g. GitHub.
-- **Contribution:** Improve the contribution process via test automation and CI/CD pipeline enhancements.
-- **Platform:** Manage installation, OS support, and the underlying CLI framework.
-- **Quality:** Focus on testing, reliability, performance, and overall product quality.
-- **Background Agents:** Enable long-running, autonomous tasks and proactive assistance.
-- **Security and Privacy:** For all things related to security and privacy
+O objetivo aqui é fazer com que a ferramenta realize tarefas complexas e se integre de forma mais inteligente com as ferramentas do desenvolvedor.
 
-## How to Contribute
+### 3.1. Integração Avançada com Git
+- [ ] **Comando de Commit Inteligente:**
+    - Criar o comando `qwen-enhanced commit`.
+    - O comando deve executar `git diff --staged`, enviar o resultado para a IA e usar a resposta para gerar uma mensagem de commit seguindo as melhores práticas (Conventional Commits).
+- [ ] **Comando de Revisão de Código:**
+    - Criar o comando `qwen-enhanced review`.
+    - O comando deve pegar as mudanças no branch atual (comparado ao `main` ou `develop`), enviá-las para a IA e pedir uma revisão de código, apontando possíveis bugs, melhorias de estilo ou vulnerabilidades.
 
-Gemini CLI is an open-source project, and we welcome contributions from the community! Whether you're a developer, a designer, or just an enthusiastic user you can find our [Community Guidelines here](https://github.com/google-gemini/gemini-cli/blob/main/CONTRIBUTING.md) to learn how to get started. There are many ways to get involved:
+### 3.2. Histórico de Conversas Persistente
+- [ ] **Salvar Sessões:** Automaticamente salvar cada sessão de chat em um arquivo local (JSON ou SQLite).
+- [ ] **Implementar Comandos de Histórico:**
+    - `/history`: Lista as sessões anteriores com data e um resumo.
+    - `/load <id_sessao>`: Carrega uma sessão anterior para continuar a conversa.
+    - `/search <termo>`: Pesquisa em todo o histórico de conversas.
 
-- **Roadmap:** Please review and find areas in our [roadmap](https://github.com/google-gemini/gemini-cli/issues/4191) that you would like to contribute to. Contributions based on this will be easiest to integrate with.
-- **Report Bugs:** If you find an issue, please create a [bug](https://github.com/google-gemini/gemini-cli/issues/new?template=bug_report.yml) with as much detail as possible. If you believe it is a critical breaking issue preventing direct CLI usage, please tag it as `priority/p0`.
-- **Suggest Features:** Have a great idea? We'd love to hear it! Open a [feature request](https://github.com/google-gemini/gemini-cli/issues/new?template=feature_request.yml).
-- **Contribute Code:** Check out our [CONTRIBUTING.md](https://github.com/google-gemini/gemini-cli/blob/main/CONTRIBUTING.md) file for guidelines on how to submit pull requests. We have a list of "good first issues" for new contributors.
-- **Write Documentation:** Help us improve our documentation, tutorials, and examples.
-  We are excited about the future of Gemini CLI and look forward to building it with you!
+---
+
+## Fase 4: Refinamento e Expansão (Ideias Futuras)
+
+- [ ] **Suporte a Multimodalidade:** Se o modelo local suportar (ex: LLaVA), permitir que a ferramenta analise imagens.
+- [ ] **Sistema de Plugins:** Arquitetar um sistema que permita que outros desenvolvedores criem e compartilhem plugins (novos comandos ou integrações).
+- [ ] **Geração de Testes Automatizada:** Um comando como `/test <arquivo>` que lê um arquivo de código e gera automaticamente um arquivo de teste correspondente.
+- [ ] **Interface Gráfica (GUI):** Considerar a criação de uma interface gráfica simples (usando Electron ou Tauri) como um companheiro para a CLI.
+
+
